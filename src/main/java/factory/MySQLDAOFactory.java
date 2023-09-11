@@ -15,7 +15,7 @@ public class MySQLDAOFactory extends DAOFactory {
 
     //JDBC driver y base de datos URL
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/db_practico1";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/integrador1";
 
     //base de datos credenciales
     private static final String USER = "root";
@@ -50,7 +50,7 @@ public class MySQLDAOFactory extends DAOFactory {
             conn = MySQLDAOFactory.conectar();
             String query = "SELECT * " +
                     "FROM information_schema.tables " +
-                    "WHERE table_schema = 'db_practico1' " +
+                    "WHERE table_schema = 'integrador1' " +
                     "AND table_name = '" + table + "'";
             PreparedStatement st = conn.prepareStatement(query);
             ResultSet rs = st.executeQuery();
