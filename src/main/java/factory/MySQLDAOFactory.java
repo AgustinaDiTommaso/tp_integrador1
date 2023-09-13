@@ -4,7 +4,8 @@ import dao.*;
 import dto.Cliente;
 import dto.Producto;
 import interfaces.InterfaceClienteDAO;
-import interfaces.InterfaceDAO;
+import interfaces.InterfaceFacturaDAO;
+import interfaces.InterfaceFacturaProductoDAO;
 import interfaces.InterfaceProductoDAO;
 
 import java.sql.*;
@@ -69,7 +70,7 @@ public class MySQLDAOFactory extends DAOFactory {
         return new MySQLClienteDAO();
     }
 
-    public InterfaceDAO getFacturaDAO() throws Exception {
+    public InterfaceFacturaDAO getFacturaDAO() throws Exception {
         return new MySQLFacturaDAO();
     }
 
@@ -77,7 +78,7 @@ public class MySQLDAOFactory extends DAOFactory {
         return new MySQLProductoDAO();
     }
 
-    public InterfaceDAO getFacturaProductoDAO() throws Exception {
+    public InterfaceFacturaProductoDAO getFacturaProductoDAO() throws Exception {
         return new MySQLFacturaProductoDAO();
     }
 

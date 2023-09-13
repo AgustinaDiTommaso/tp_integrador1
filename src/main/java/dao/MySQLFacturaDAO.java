@@ -3,13 +3,14 @@ package dao;
 import csv.CSVcharger;
 import dto.Factura;
 import factory.MySQLDAOFactory;
-import interfaces.InterfaceDAO;
+import interfaces.InterfaceFacturaDAO;
+import interfaces.InterfaceFacturaProductoDAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class MySQLFacturaDAO implements InterfaceDAO<Factura> {
+public class MySQLFacturaDAO implements InterfaceFacturaDAO<Factura> {
     public MySQLFacturaDAO() throws Exception {
         if (!MySQLDAOFactory.checkIfExistsEntity("factura", MySQLDAOFactory.conectar())){
             this.crearTabla();

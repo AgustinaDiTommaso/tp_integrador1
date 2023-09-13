@@ -1,6 +1,7 @@
 import dto.Cliente;
 import interfaces.InterfaceClienteDAO;
-import interfaces.InterfaceDAO;
+import interfaces.InterfaceFacturaDAO;
+import interfaces.InterfaceFacturaProductoDAO;
 import interfaces.InterfaceProductoDAO;
 import dto.Producto;
 import factory.DAOFactory;
@@ -16,8 +17,8 @@ public class app {
         DAOFactory MySQL_Factory = DAOFactory.getDAOFactory(DAOFactory.MYSQL_JDBC);
         InterfaceClienteDAO clienteDao = MySQL_Factory.getClienteDAO();
         InterfaceProductoDAO productoDao = MySQL_Factory.getProductoDAO();
-        InterfaceDAO facturaDao = MySQL_Factory.getFacturaDAO();
-        InterfaceDAO facturaProductoDao = MySQL_Factory.getFacturaProductoDAO();
+        InterfaceFacturaDAO facturaDao = MySQL_Factory.getFacturaDAO();
+        InterfaceFacturaProductoDAO facturaProductoDao = MySQL_Factory.getFacturaProductoDAO();
 
         Producto p = productoDao.mayorRecaudacionPorProducto();
         System.out.println("---------------------------------------------------");

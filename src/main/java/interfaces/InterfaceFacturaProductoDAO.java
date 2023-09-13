@@ -1,7 +1,7 @@
 package interfaces;
 
 //debería haber una interface para cada entidad
-public interface InterfaceDAO<T> {
+public interface InterfaceFacturaProductoDAO<T> {
 
     public T buscar(int id) throws Exception;
 

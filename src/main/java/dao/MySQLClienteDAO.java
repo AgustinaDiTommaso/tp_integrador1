@@ -2,10 +2,8 @@ package dao;
 
 import csv.CSVcharger;
 import dto.Cliente;
-import dto.Producto;
 import factory.MySQLDAOFactory;
 import interfaces.InterfaceClienteDAO;
-import interfaces.InterfaceDAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,7 +1,8 @@
 package csv;
 
 import interfaces.InterfaceClienteDAO;
-import interfaces.InterfaceDAO;
+import interfaces.InterfaceFacturaDAO;
+import interfaces.InterfaceFacturaProductoDAO;
 import interfaces.InterfaceProductoDAO;
 import dto.Cliente;
 import dto.Factura;
@@ -44,7 +45,7 @@ public class CSVcharger<T> {
         }
     }
 
-    public void cargarFacturas(InterfaceDAO<Factura> daoFactura) {
+    public void cargarFacturas(InterfaceFacturaDAO<Factura> daoFactura) {
         try {
             CSVParser parser = CSVFormat.DEFAULT.withHeader().parse(new FileReader(path + "facturas.csv"));
             for (CSVRecord row : parser) {
@@ -54,7 +55,7 @@ public class CSVcharger<T> {
             throw new RuntimeException(e);
         }
     }
-    public void cargarFacturasProductos(InterfaceDAO<FacturaProducto> daoFacturaProducto) {
+    public void cargarFacturasProductos(InterfaceFacturaProductoDAO<FacturaProducto> daoFacturaProducto) {
         try {
             CSVParser parser = CSVFormat.DEFAULT.withHeader().parse(new FileReader(path + "facturas-productos.csv"));
             for (CSVRecord row : parser) {
