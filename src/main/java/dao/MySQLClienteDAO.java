@@ -107,23 +107,23 @@ public class MySQLClienteDAO implements InterfaceClienteDAO<Cliente> {
     @Override
     public ArrayList<Cliente> obtenerClientePorRecaudacion() throws Exception {
         Connection conexion = MySQLDAOFactory.conectar();
-        String query = "SELECT f.idCliente, c.nombre, SUM(fp.cantidad * p.valor) AS total_valor " +
-                "FROM factura_producto fp " +
-                "JOIN producto p ON p.idProducto = fp.idProducto " +
-                "JOIN factura f ON f.idFactura = fp.idFactura " +
-                "JOIN cliente c ON c.idCliente = f.idCliente " +
-                "GROUP BY f.idCliente , c.nombre " +
-                "order by total_valor DESC";
+        String query =  "SELECT  SUM(fp.cantidad * p.valor) AS total_valor, f.idCliente, c.nombre, c.email " +
+                        "FROM factura_producto fp " +
+                        "JOIN producto p ON p.idProducto = fp.idProducto " +
+                        "JOIN factura f ON f.idFactura = fp.idFactura " +
+                        "JOIN cliente c ON c.idCliente = f.idCliente " +
+                        "GROUP BY f.idCliente , c.nombre, c.email " +
+                        "order by total_valor DESC";
         PreparedStatement st = conexion.prepareStatement(query);
         ResultSet rs = st.executeQuery();
 
         ArrayList<Cliente> clientes = new ArrayList<>();
-        Cliente cliente;
         while (rs.next()){
-            cliente = this.buscar(rs.getInt(1));
-            cliente.setTotalFacturado( rs.getFloat(3));
+            Cliente cliente = new Cliente(rs.getInt(2), rs.getString(3), rs.getString(4));
+            cliente.setTotalFacturado( rs.getFloat(1));
             clientes.add(cliente);
         }
+
         conexion.close();
         return clientes;
     }

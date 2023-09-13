@@ -52,6 +52,6 @@ public class Cliente {
 
     @Override
     public String toString() {
-        return  "ID: " + this.idCliente + " \t - Nombre:" + this.nombre + "\t - Email: " + this.email + "\t";
+        return  "ID: " + this.idCliente + " \t - Nombre: " + this.nombre + "\t - Email: " + this.email + "\t";
     }
 }

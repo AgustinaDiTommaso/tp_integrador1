@@ -5,18 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5f28f47b-e869-4fec-ba70-15ae6b40ca89" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/interfaces/InterfaceFacturaDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/app.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/app.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVcharger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVcharger.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dao/MySQLClienteDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/MySQLClienteDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dao/MySQLFacturaDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/MySQLFacturaDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dao/MySQLFacturaProductoDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/MySQLFacturaProductoDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/factory/DAOFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/factory/DAOFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/factory/MySQLDAOFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/factory/MySQLDAOFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/interfaces/InterfaceDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/interfaces/InterfaceFacturaProductoDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/com/example/tp_integrador1/hello-view.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dao/MySQLProductoDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/MySQLProductoDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dto/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dto/Cliente.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +74,7 @@
       <option name="presentableId" value="Default" />
       <updated>1694278087014</updated>
       <workItem from="1694278087904" duration="350000" />
-      <workItem from="1694605956922" duration="1272000" />
+      <workItem from="1694605956922" duration="2791000" />
     </task>
     <servers />
   </component>

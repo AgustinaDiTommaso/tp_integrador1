@@ -104,7 +104,7 @@ public class MySQLProductoDAO implements InterfaceProductoDAO<Producto> {
     }
     public Producto mayorRecaudacionPorProducto() throws Exception {
         Connection conexion = MySQLDAOFactory.conectar();
-        String query = "SELECT p.idProducto, p.nombre, SUM(fp.cantidad) * p.valor as recaudacion " +
+        String query = "SELECT p.idProducto, p.nombre, p.valor, SUM(fp.cantidad) * p.valor as recaudacion " +
                 "FROM factura_producto fp " +
                 "JOIN producto p on p.idProducto = fp.idProducto " +
                 "GROUP BY p.idProducto " +
@@ -113,8 +113,8 @@ public class MySQLProductoDAO implements InterfaceProductoDAO<Producto> {
         PreparedStatement st = conexion.prepareStatement(query);
         ResultSet rs = st.executeQuery();
         if (rs.next()){
-            Producto p = this.buscar(rs.getInt(1));
-            p.setRecaudacion( rs.getFloat(3));
+            Producto p = new Producto(rs.getInt(1), rs.getInt(3), rs.getString(2));
+            p.setRecaudacion( rs.getFloat(4));
             conexion.close();
             return p;
         }
