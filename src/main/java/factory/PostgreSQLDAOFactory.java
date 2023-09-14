@@ -4,6 +4,10 @@ import dao.MySQL.MySQLClienteDAO;
 import dao.MySQL.MySQLFacturaDAO;
 import dao.MySQL.MySQLFacturaProductoDAO;
 import dao.MySQL.MySQLProductoDAO;
+import dao.PostgreSQL.PostgreSQLClienteDAO;
+import dao.PostgreSQL.PostgreSQLFacturaDAO;
+import dao.PostgreSQL.PostgreSQLFacturaProductoDAO;
+import dao.PostgreSQL.PostgreSQLProductoDAO;
 import dto.Cliente;
 import dto.Producto;
 import interfaces.InterfaceClienteDAO;
@@ -15,26 +19,26 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class MySQLDAOFactory extends DAOFactory {
+public class PostgreSQLDAOFactory extends DAOFactory {
 
     //JDBC driver y base de datos URL
-    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/integrador1";
+    private static final String DRIVER = "org.postgresql.Driver";
+    private static final String DB_URL = "jdbc:postgresql://localhost:5432/integrador1";
 
     //base de datos credenciales
-    private static final String USER = "root";
-    private static final String PASS = "";
+    private static final String USER = "postgres";
+    private static final String PASS = "postgres";
 
-    private static MySQLDAOFactory instancia;
+    private static PostgreSQLDAOFactory instancia;
 
     //Constructor privado para evitar crear un new una nueva instancia
-    private MySQLDAOFactory() {
+    private PostgreSQLDAOFactory() {
         Locale.setDefault(new Locale("en", "US"));
     }
 
-    public static MySQLDAOFactory getInstancia() {
+    public static PostgreSQLDAOFactory getInstancia() {
         if(instancia == null)
-            instancia = new MySQLDAOFactory();
+            instancia = new PostgreSQLDAOFactory();
         return instancia;
     }
 
@@ -51,17 +55,18 @@ public class MySQLDAOFactory extends DAOFactory {
 
     public static boolean checkIfExistsEntity(String table, Connection conn) throws SQLException {
         try {
-            conn = MySQLDAOFactory.conectar();
-            String query = "SELECT * " +
+            conn = PostgreSQLDAOFactory.conectar();
+            String query = "SELECT EXISTS (" +
+                    "SELECT 1 " +
                     "FROM information_schema.tables " +
-                    "WHERE table_schema = 'integrador1' " +
-                    "AND table_name = '" + table + "'";
+                    "WHERE table_schema = ? " +
+                    "AND table_name = ?)";
             PreparedStatement st = conn.prepareStatement(query);
+            st.setString(1,"public");
+            st.setString(2, table);
             ResultSet rs = st.executeQuery();
-            if (rs.next())
-                return true;
-            else
-                return false;
+            rs.next();
+            return rs.getBoolean(1);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -70,25 +75,25 @@ public class MySQLDAOFactory extends DAOFactory {
     }
 
     public InterfaceClienteDAO<Cliente> getClienteDAO() throws Exception {
-        return new MySQLClienteDAO();
+        return new PostgreSQLClienteDAO();
     }
 
     public InterfaceFacturaDAO getFacturaDAO() throws Exception {
-        return new MySQLFacturaDAO();
+        return new PostgreSQLFacturaDAO();
     }
 
     public InterfaceProductoDAO<Producto> getProductoDAO() throws Exception {
-        return new MySQLProductoDAO();
+        return new PostgreSQLProductoDAO();
     }
 
     public InterfaceFacturaProductoDAO getFacturaProductoDAO() throws Exception {
-        return new MySQLFacturaProductoDAO();
+        return new PostgreSQLFacturaProductoDAO();
     }
 
     // SQL especificas
     @Override
     public ArrayList<Cliente> listAllClient() throws Exception {
-        Connection conexion = MySQLDAOFactory.conectar();
+        Connection conexion = PostgreSQLDAOFactory.conectar();
 
         PreparedStatement st = conexion.prepareStatement(
                 "SELECT * FROM cliente");

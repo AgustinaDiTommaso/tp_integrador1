@@ -1,7 +1,7 @@
 package dto;
 
 public class Producto {
-    private int idProducto;
+    private Integer idProducto = null;
     private float valor;
     private String nombre;
     private float recaudacion;

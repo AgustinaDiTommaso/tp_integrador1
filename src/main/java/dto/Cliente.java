@@ -5,15 +5,8 @@ public class Cliente {
     private int idCliente;
     private String nombre;
     private String email;
-    public Float getTotalFacturado() {
-        return totalFacturado;
-    }
-
-    public void setTotalFacturado(Float totalFacturado) {
-        this.totalFacturado = totalFacturado;
-    }
-
     private Float totalFacturado;
+
 
     public Cliente(Integer id, String nombre, String email){
         this.idCliente = id;
@@ -25,6 +18,8 @@ public class Cliente {
         this.email = email;
         this.nombre = nombre;
     }
+    public Float getTotalFacturado() { return totalFacturado; }
+
 
     public String getNombre() {
         return nombre;
@@ -37,6 +32,7 @@ public class Cliente {
     public String getEmail() {
         return email;
     }
+    public void setTotalFacturado(Float totalFacturado) { this.totalFacturado = totalFacturado; }
 
     public void setNombre(String nombre) {
         this.nombre = nombre;

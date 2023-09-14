@@ -17,10 +17,26 @@ import java.io.FileReader;
 public class CSVcharger<T> {
 
     private String dataSetName;
+
     private String path = "./src/main/java/csv/";
 
     public CSVcharger() {
 
+    }
+    public String getDataSetName() {
+        return dataSetName;
+    }
+
+    public void setDataSetName(String dataSetName) {
+        this.dataSetName = dataSetName;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public void cargaClientes(InterfaceClienteDAO<Cliente> daoCliente) {

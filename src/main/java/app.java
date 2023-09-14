@@ -14,11 +14,17 @@ public class app {
     private String nombre;
     public static void main(String[] args) throws Exception {
 
-        DAOFactory MySQL_Factory = DAOFactory.getDAOFactory(DAOFactory.MYSQL_JDBC);
-        InterfaceClienteDAO clienteDao = MySQL_Factory.getClienteDAO();
-        InterfaceProductoDAO productoDao = MySQL_Factory.getProductoDAO();
-        InterfaceFacturaDAO facturaDao = MySQL_Factory.getFacturaDAO();
-        InterfaceFacturaProductoDAO facturaProductoDao = MySQL_Factory.getFacturaProductoDAO();
+//        DAOFactory MySQL_Factory = DAOFactory.getDAOFactory(DAOFactory.MYSQL_JDBC);
+//        InterfaceClienteDAO clienteDao = MySQL_Factory.getClienteDAO();
+//        InterfaceProductoDAO productoDao = MySQL_Factory.getProductoDAO();
+//        InterfaceFacturaDAO facturaDao = MySQL_Factory.getFacturaDAO();
+//        InterfaceFacturaProductoDAO facturaProductoDao = MySQL_Factory.getFacturaProductoDAO();
+
+        DAOFactory PostgreSQL_Factory = DAOFactory.getDAOFactory(DAOFactory.POSTGRESQL_JDBC);
+        InterfaceClienteDAO clienteDao = PostgreSQL_Factory.getClienteDAO();
+        InterfaceProductoDAO productoDao = PostgreSQL_Factory.getProductoDAO();
+        InterfaceFacturaDAO facturaDao = PostgreSQL_Factory.getFacturaDAO();
+        InterfaceFacturaProductoDAO facturaProductoDao = PostgreSQL_Factory.getFacturaProductoDAO();
 
         Producto p = productoDao.mayorRecaudacionPorProducto();
         System.out.println("---------------------------------------------------");

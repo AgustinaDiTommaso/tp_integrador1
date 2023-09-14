@@ -12,11 +12,14 @@ import java.util.ArrayList;
 public abstract class DAOFactory {
 
     public static final int MYSQL_JDBC = 1;
+    public static final int POSTGRESQL_JDBC = 2;
 
     public static DAOFactory getDAOFactory(int DB_Factory) {
         switch (DB_Factory) {
             case MYSQL_JDBC:
                 return MySQLDAOFactory.getInstancia();
+            case POSTGRESQL_JDBC:
+                return PostgreSQLDAOFactory.getInstancia();
             default:
                 return null;
         }
