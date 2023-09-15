@@ -30,8 +30,4 @@ public abstract class DAOFactory {
 
     public abstract InterfaceFacturaProductoDAO getFacturaProductoDAO() throws Exception;
 
-    // SQL especificas
-    public abstract ArrayList<Cliente> listAllClient() throws Exception;
-
-
 }
