@@ -1,29 +1,32 @@
 package factory;
 
-import dao.PostgreSQL.PostgreSQLClienteDAO;
-import dao.PostgreSQL.PostgreSQLFacturaDAO;
-import dao.PostgreSQL.PostgreSQLFacturaProductoDAO;
-import dao.PostgreSQL.PostgreSQLProductoDAO;
-import dto.Cliente;
-import dto.Producto;
-import interfaces.InterfaceClienteDAO;
-import interfaces.InterfaceFacturaDAO;
-import interfaces.InterfaceFacturaProductoDAO;
-import interfaces.InterfaceProductoDAO;
-
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.Locale;
+
+import dao.MongoDB.*;
+import interfaces.*;
+import dto.*;
+
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoDatabase;
+import dao.MongoDB.MongoDBClienteDAO;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MongoDBDAOFactory extends DAOFactory {
 
     //JDBC driver y base de datos URL
-    private static final String DRIVER = "org.postgresql.Driver";
-    private static final String DB_URL = "mongodb://miusuario:mipassword@localhost:27017/integrador1";
+    public static final String DRIVER = "org.postgresql.Driver";
+//    private static final String DB_URL = "localhost";
+    private static final String DB_URL = "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.1";
+//    private static final String DB_URL = "mongodb://mongodb:mongodb@localhost:27017/integrador1";
+    private static final String DB_NAME = "integrador1";
+    private static final int DB_PORT = 27017;
 
     //base de datos credenciales
-    private static final String USER = "postgres";
-    private static final String PASS = "postgres";
+    private static final String USER = "mongodb";
+    private static final String PASS = "mongodb";
 
     private static MongoDBDAOFactory instancia;
 
@@ -33,78 +36,60 @@ public class MongoDBDAOFactory extends DAOFactory {
     }
 
     public static MongoDBDAOFactory getInstancia() {
+        // eliminar los mensajes de log que emite el driver de mongo
+        Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
+        mongoLogger.setLevel(Level.WARNING);
+
         if(instancia == null)
             instancia = new MongoDBDAOFactory();
         return instancia;
     }
 
-    public static Connection conectar() throws Exception {
-        Connection conexion;
+
+    public static MongoDatabase conectar() throws Exception {
         try {
-            Class.forName(DRIVER).getDeclaredConstructor().newInstance();
-            conexion = DriverManager.getConnection(DB_URL, USER, PASS);
-        } catch (SQLException e) {
-            throw e;
+            String uri_string = DB_URL;
+//            String uri_string = "mongodb://" + USER + ":" + PASS + "@" + DB_URL + ":" + DB_PORT + "/" + DB_NAME;
+
+            // Crear una instancia de MongoClientURI con la URL de conexión
+            MongoClientURI uri = new MongoClientURI(uri_string);
+
+            // Crear una instancia de MongoClient usando la URI
+            MongoClient mongoClient = new MongoClient(uri);
+
+            // Obtener una instancia de MongoDatabase para la base de datos deseada
+            MongoDatabase database = mongoClient.getDatabase(DB_NAME);
+
+            return database;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error al conectar a MongoDB: " + e.getMessage(), e);
         }
-        return conexion;
     }
 
-    public static boolean checkIfExistsEntity(String table, Connection conn) throws SQLException {
-        try {
-            conn = MongoDBDAOFactory.conectar();
-            String query = "SELECT EXISTS (" +
-                    "SELECT 1 " +
-                    "FROM information_schema.tables " +
-                    "WHERE table_schema = ? " +
-                    "AND table_name = ?)";
-            PreparedStatement st = conn.prepareStatement(query);
-            st.setString(1,"public");
-            st.setString(2, table);
-            ResultSet rs = st.executeQuery();
-            rs.next();
-            return rs.getBoolean(1);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            conn.close();
+    public static boolean checkIfExistsEntity(String collection, MongoDatabase database) throws Exception {
+        for (String nombre : database.listCollectionNames()) {
+            if (nombre.equals(collection)) {
+                return true;
+            }
         }
+        return false;
     }
 
     public InterfaceClienteDAO<Cliente> getClienteDAO() throws Exception {
-        return new PostgreSQLClienteDAO();
+        return new MongoDBClienteDAO();
     }
 
     public InterfaceFacturaDAO getFacturaDAO() throws Exception {
-        return new PostgreSQLFacturaDAO();
+        return new MongoDBFacturaDAO();
     }
 
     public InterfaceProductoDAO<Producto> getProductoDAO() throws Exception {
-        return new PostgreSQLProductoDAO();
+        return new MongoDBProductoDAO();
     }
 
     public InterfaceFacturaProductoDAO getFacturaProductoDAO() throws Exception {
-        return new PostgreSQLFacturaProductoDAO();
+        return new MongoDBFacturaProductoDAO();
     }
-
-    // SQL especificas
-    @Override
-    public ArrayList<Cliente> listAllClient() throws Exception {
-        Connection conexion = MongoDBDAOFactory.conectar();
-
-        PreparedStatement st = conexion.prepareStatement(
-                "SELECT * FROM cliente");
-        ResultSet rs = st.executeQuery();
-
-        ArrayList<Cliente> clientes = new ArrayList<>();
-        Cliente c;
-        while (rs.next()) {
-            c = new Cliente(rs.getInt(1), rs.getString(2), rs.getString(3));
-            clientes.add(c);
-        }
-
-        conexion.close();
-        return clientes;
-    }
-
 
 }

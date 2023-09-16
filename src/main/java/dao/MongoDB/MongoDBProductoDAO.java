@@ -1,9 +1,13 @@
 package dao.MongoDB;
 
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import csv.CSVcharger;
 import dto.Producto;
+import factory.MongoDBDAOFactory;
 import factory.MySQLDAOFactory;
 import interfaces.InterfaceProductoDAO;
+import org.bson.Document;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +15,7 @@ import java.sql.ResultSet;
 
 public class MongoDBProductoDAO implements InterfaceProductoDAO<Producto> {
     public MongoDBProductoDAO() throws Exception {
-        if(!MySQLDAOFactory.checkIfExistsEntity("producto", MySQLDAOFactory.conectar())){
+        if(!MongoDBDAOFactory.checkIfExistsEntity("producto", MongoDBDAOFactory.conectar())){
             this.crearTabla();
             CSVcharger cargarProductos = new CSVcharger();
             cargarProductos.cargarProductos(this);
@@ -56,19 +60,14 @@ public class MongoDBProductoDAO implements InterfaceProductoDAO<Producto> {
 
     @Override
     public void registrar(Producto producto) throws Exception {
-        Connection conexion = MySQLDAOFactory.conectar();
-        try {
-            PreparedStatement st = conexion.prepareStatement(
-                    "INSERT INTO producto (nombre, valor) " +
-                            "VALUES (?,?) ");
-            st.setString(1, producto.getNombre());
-            st.setFloat(2, producto.getValor());
-            st.executeUpdate();
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            conexion.close();
-        }
+        MongoDatabase db = MongoDBDAOFactory.conectar();
+        Document documentoProducto =
+                new Document(
+                                "nombre", producto.getNombre())
+                        .append("valor", producto.getValor()
+                    );
+        MongoCollection<Document> coleccionProductos = db.getCollection("producto");
+        coleccionProductos.insertOne(documentoProducto);
     }
 
     @Override
@@ -92,14 +91,8 @@ public class MongoDBProductoDAO implements InterfaceProductoDAO<Producto> {
     }
 
     public void crearTabla() throws Exception {
-        Connection conexion = MySQLDAOFactory.conectar();
-        String query = "CREATE TABLE IF NOT EXISTS producto" +
-                "(idProducto INT AUTO_INCREMENT, " +
-                "nombre VARCHAR(500)," +
-                "valor FLOAT," +
-                "PRIMARY KEY (idProducto))";
-        conexion.prepareStatement(query).execute();
-        conexion.close();
+        MongoDatabase db = MongoDBDAOFactory.conectar();
+        db.createCollection("producto");
         System.out.println("Tabla Producto Creada");
     }
     public Producto mayorRecaudacionPorProducto() throws Exception {

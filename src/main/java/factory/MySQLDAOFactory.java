@@ -85,25 +85,4 @@ public class MySQLDAOFactory extends DAOFactory {
         return new MySQLFacturaProductoDAO();
     }
 
-    // SQL especificas
-    @Override
-    public ArrayList<Cliente> listAllClient() throws Exception {
-        Connection conexion = MySQLDAOFactory.conectar();
-
-        PreparedStatement st = conexion.prepareStatement(
-                "SELECT * FROM cliente");
-        ResultSet rs = st.executeQuery();
-
-        ArrayList<Cliente> clientes = new ArrayList<>();
-        Cliente c;
-        while (rs.next()) {
-            c = new Cliente(rs.getInt(1), rs.getString(2), rs.getString(3));
-            clientes.add(c);
-        }
-
-        conexion.close();
-        return clientes;
-    }
-
-
 }

@@ -1,9 +1,13 @@
 package dao.MongoDB;
 
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import csv.CSVcharger;
 import dto.Factura;
+import factory.MongoDBDAOFactory;
 import factory.MySQLDAOFactory;
 import interfaces.InterfaceFacturaDAO;
+import org.bson.Document;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +15,7 @@ import java.sql.ResultSet;
 
 public class MongoDBFacturaDAO implements InterfaceFacturaDAO<Factura> {
     public MongoDBFacturaDAO() throws Exception {
-        if (!MySQLDAOFactory.checkIfExistsEntity("factura", MySQLDAOFactory.conectar())){
+        if (!MongoDBDAOFactory.checkIfExistsEntity("factura", MongoDBDAOFactory.conectar())) {
             this.crearTabla();
             CSVcharger cargarFacturas = new CSVcharger();
             cargarFacturas.cargarFacturas(this);
@@ -56,18 +60,11 @@ public class MongoDBFacturaDAO implements InterfaceFacturaDAO<Factura> {
 
     @Override
     public void registrar(Factura factura) throws Exception {
-        Connection conexion = MySQLDAOFactory.conectar();
-        try {
-            String query =
-                    "INSERT INTO factura (idCliente) VALUES (?) ";
-            PreparedStatement st = conexion.prepareStatement(query);
-            st.setInt(1, factura.getIdCliente());
-            st.executeUpdate();
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            conexion.close();
-        }
+        MongoDatabase db = MongoDBDAOFactory.conectar();
+        Document documentoFactura =
+                new Document("idCliente", factura.getIdFactura());
+        MongoCollection<Document> coleccionFactura = db.getCollection("factura");
+        coleccionFactura.insertOne(documentoFactura);
     }
 
     @Override
@@ -90,16 +87,8 @@ public class MongoDBFacturaDAO implements InterfaceFacturaDAO<Factura> {
     }
 
     public void crearTabla() throws Exception {
-        Connection conexion = MySQLDAOFactory.conectar();
-        String query =
-                "CREATE TABLE IF NOT EXISTS factura (" +
-                        "idFactura INT AUTO_INCREMENT, " +
-                        "idCliente INT, " +
-                        "PRIMARY KEY (idFactura)," +
-                        "FOREIGN KEY (idCliente) REFERENCES cliente(idCliente)" +
-                        ")";
-        conexion.prepareStatement(query).execute();
-        conexion.close();
+        MongoDatabase db = MongoDBDAOFactory.conectar();
+        db.createCollection("factura");
         System.out.println("Tabla Factura Creada");
     }
 }

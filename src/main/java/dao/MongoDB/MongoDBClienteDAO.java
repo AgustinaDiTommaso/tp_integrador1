@@ -1,9 +1,13 @@
 package dao.MongoDB;
 
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import csv.CSVcharger;
 import dto.Cliente;
+import factory.MongoDBDAOFactory;
 import factory.MySQLDAOFactory;
 import interfaces.InterfaceClienteDAO;
+import org.bson.Document;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +16,7 @@ import java.util.ArrayList;
 
 public class MongoDBClienteDAO implements InterfaceClienteDAO<Cliente> {
     public MongoDBClienteDAO() throws Exception {
-        if(!MySQLDAOFactory.checkIfExistsEntity("cliente", MySQLDAOFactory.conectar())){
+        if(!MongoDBDAOFactory.checkIfExistsEntity("cliente", MongoDBDAOFactory.conectar())){
             this.crearTabla();
             CSVcharger cargarClientes = new CSVcharger<>();
             cargarClientes.cargaClientes(this);
@@ -57,19 +61,14 @@ public class MongoDBClienteDAO implements InterfaceClienteDAO<Cliente> {
 
     @Override
     public void registrar(Cliente cliente) throws Exception {
-        Connection conexion = MySQLDAOFactory.conectar();
-        try {
-            PreparedStatement st = conexion.prepareStatement(
-                    "INSERT INTO cliente (nombre, email) " +
-                            "VALUES (?,?) ");
-            st.setString(1, cliente.getNombre());
-            st.setString(2, cliente.getEmail());
-            st.executeUpdate();
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            conexion.close();
-        }
+        MongoDatabase db = MongoDBDAOFactory.conectar();
+        Document documentoCliente =
+                new Document(
+                        "nombre", cliente.getNombre())
+                        .append("mail", cliente.getEmail()
+                        );
+        MongoCollection<Document> coleccionCliente = db.getCollection("cliente");
+        coleccionCliente.insertOne(documentoCliente);
     }
 
     @Override
@@ -93,19 +92,49 @@ public class MongoDBClienteDAO implements InterfaceClienteDAO<Cliente> {
     }
 
     public void crearTabla() throws Exception {
-        Connection conexion = MySQLDAOFactory.conectar();
-        String query = "CREATE TABLE IF NOT EXISTS cliente" +
-                "(idCliente INT AUTO_INCREMENT, " +
-                "nombre VARCHAR(500)," +
-                "email VARCHAR(150)," +
-                "PRIMARY KEY (idCliente))";
-        conexion.prepareStatement(query).execute();
-        conexion.close();
+        MongoDatabase db = MongoDBDAOFactory.conectar();
+        db.createCollection("cliente");
         System.out.println("Tabla Cliente Creada");
     }
 
     @Override
     public ArrayList<Cliente> obtenerClientePorRecaudacion() throws Exception {
+
+
+        // Define la etapa de agregación
+        Document lookupProductos = new Document("$lookup", new Document("from", "producto")
+                .append("localField", "idFactura")
+                .append("foreignField", "idFactura")
+                .append("as", "productos"));
+
+        Document unwindProductos = new Document("$unwind", "$productos");
+
+        Document lookupCliente = new Document("$lookup", new Document("from", "cliente")
+                .append("localField", "idCliente")
+                .append("foreignField", "idCliente")
+                .append("as", "cliente"));
+
+        Document unwindCliente = new Document("$unwind", "$cliente");
+
+        Document group = new Document("$group", new Document("_id", new Document("idCliente", "$cliente.idCliente")
+                .append("nombre", "$cliente.nombre")
+                .append("email", "$cliente.email"))
+                .append("total_valor", new Document("$sum", new Document("$multiply", ArrayList.asList("$productos.cantidad", "$productos.valor")))));
+
+        Document project = new Document("$project", new Document("_id", 0)
+                .append("total_valor", 1)
+                .append("idCliente", "$_id.idCliente")
+                .append("nombre", "$_id.nombre")
+                .append("email", "$_id.email"));
+
+        Document sort = new Document("$sort", new Document("total_valor", -1));
+
+        // Ejecuta la agregación
+        Iterable<Document> results = facturaCollection.aggregate(
+                Arrays.asList(lookupProductos, unwindProductos, lookupCliente, unwindCliente, group, project, sort)
+        );
+
+
         Connection conexion = MySQLDAOFactory.conectar();
         String query =  "SELECT  SUM(fp.cantidad * p.valor) AS total_valor, f.idCliente, c.nombre, c.email " +
                         "FROM factura_producto fp " +

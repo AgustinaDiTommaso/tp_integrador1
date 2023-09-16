@@ -1,9 +1,5 @@
 package factory;
 
-import dao.MySQL.MySQLClienteDAO;
-import dao.MySQL.MySQLFacturaDAO;
-import dao.MySQL.MySQLFacturaProductoDAO;
-import dao.MySQL.MySQLProductoDAO;
 import dao.PostgreSQL.PostgreSQLClienteDAO;
 import dao.PostgreSQL.PostgreSQLFacturaDAO;
 import dao.PostgreSQL.PostgreSQLFacturaProductoDAO;
@@ -89,26 +85,5 @@ public class PostgreSQLDAOFactory extends DAOFactory {
     public InterfaceFacturaProductoDAO getFacturaProductoDAO() throws Exception {
         return new PostgreSQLFacturaProductoDAO();
     }
-
-    // SQL especificas
-    @Override
-    public ArrayList<Cliente> listAllClient() throws Exception {
-        Connection conexion = PostgreSQLDAOFactory.conectar();
-
-        PreparedStatement st = conexion.prepareStatement(
-                "SELECT * FROM cliente");
-        ResultSet rs = st.executeQuery();
-
-        ArrayList<Cliente> clientes = new ArrayList<>();
-        Cliente c;
-        while (rs.next()) {
-            c = new Cliente(rs.getInt(1), rs.getString(2), rs.getString(3));
-            clientes.add(c);
-        }
-
-        conexion.close();
-        return clientes;
-    }
-
 
 }

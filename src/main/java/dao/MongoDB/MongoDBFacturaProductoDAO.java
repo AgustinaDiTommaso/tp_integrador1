@@ -1,9 +1,13 @@
 package dao.MongoDB;
 
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import csv.CSVcharger;
 import dto.FacturaProducto;
+import factory.MongoDBDAOFactory;
 import factory.MySQLDAOFactory;
 import interfaces.InterfaceFacturaProductoDAO;
+import org.bson.Document;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +15,7 @@ import java.sql.ResultSet;
 
 public class MongoDBFacturaProductoDAO implements InterfaceFacturaProductoDAO<FacturaProducto> {
     public MongoDBFacturaProductoDAO() throws Exception {
-        if (!MySQLDAOFactory.checkIfExistsEntity("factura_producto", MySQLDAOFactory.conectar())){
+        if (!MongoDBDAOFactory.checkIfExistsEntity("factura_producto", MongoDBDAOFactory.conectar())){
             this.crearTabla();
             CSVcharger cargarFacturasProductos = new CSVcharger();
             cargarFacturasProductos.cargarFacturasProductos(this);
@@ -56,19 +60,19 @@ public class MongoDBFacturaProductoDAO implements InterfaceFacturaProductoDAO<Fa
 
     @Override
     public void registrar(FacturaProducto facturaProducto) throws Exception {
-        Connection conexion = MySQLDAOFactory.conectar();
+
         try {
-            PreparedStatement st = conexion.prepareStatement(
-                    "INSERT INTO factura_producto (idFactura, idProducto, cantidad) " +
-                            "VALUES (?,?,?)");
-            st.setInt(1, facturaProducto.getIdFactura());
-            st.setInt(2, facturaProducto.getIdProducto());
-            st.setInt(3, facturaProducto.getCantidad());
-            st.executeUpdate();
+            MongoDatabase db = MongoDBDAOFactory.conectar();
+            Document documentoFacturaProducto =
+                    new Document(
+                            "idFactura", facturaProducto.getIdFactura())
+                            .append("idProducto", facturaProducto.getIdProducto())
+                            .append("cantidad", facturaProducto.getCantidad()
+                            );
+            MongoCollection<Document> coleccionFacturaProductos = db.getCollection("factura_producto");
+            coleccionFacturaProductos.insertOne(documentoFacturaProducto);
         } catch (Exception e) {
-            throw e;
-        } finally {
-            conexion.close();
+            throw new RuntimeException(e);
         }
     }
 
@@ -94,16 +98,8 @@ public class MongoDBFacturaProductoDAO implements InterfaceFacturaProductoDAO<Fa
     }
 
     public void crearTabla() throws Exception {
-        Connection conexion = MySQLDAOFactory.conectar();
-        String query = "CREATE TABLE IF NOT EXISTS factura_producto" +
-                "(idFactura INT, " +
-                "idProducto INT, " +
-                "cantidad INT, " +
-                "FOREIGN KEY (idProducto) REFERENCES producto(idProducto), " +
-                "FOREIGN KEY (idFactura) REFERENCES factura(idFactura)" +
-                ")";
-        conexion.prepareStatement(query).execute();
-        conexion.close();
+        MongoDatabase db = MongoDBDAOFactory.conectar();
+        db.createCollection("factura_producto");
         System.out.println("Tabla FacturaProducto Creada");
     }
 

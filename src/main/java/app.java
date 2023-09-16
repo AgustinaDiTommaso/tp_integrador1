@@ -1,4 +1,6 @@
+import com.mongodb.client.MongoDatabase;
 import dto.Cliente;
+import factory.MongoDBDAOFactory;
 import interfaces.InterfaceClienteDAO;
 import interfaces.InterfaceFacturaDAO;
 import interfaces.InterfaceFacturaProductoDAO;
@@ -14,17 +16,14 @@ public class app {
     private String nombre;
     public static void main(String[] args) throws Exception {
 
-//        DAOFactory MySQL_Factory = DAOFactory.getDAOFactory(DAOFactory.MYSQL_JDBC);
-//        InterfaceClienteDAO clienteDao = MySQL_Factory.getClienteDAO();
-//        InterfaceProductoDAO productoDao = MySQL_Factory.getProductoDAO();
-//        InterfaceFacturaDAO facturaDao = MySQL_Factory.getFacturaDAO();
-//        InterfaceFacturaProductoDAO facturaProductoDao = MySQL_Factory.getFacturaProductoDAO();
+//        DAOFactory FactoryDB = DAOFactory.getDAOFactory(DAOFactory.POSTGRESQL_JDBC);
+        DAOFactory FactoryDB = DAOFactory.getDAOFactory(DAOFactory.MONGODB_JDBC);
+//        DAOFactory FactoryDB = DAOFactory.getDAOFactory(DAOFactory.MYSQL_JDBC);
 
-        DAOFactory PostgreSQL_Factory = DAOFactory.getDAOFactory(DAOFactory.POSTGRESQL_JDBC);
-        InterfaceClienteDAO clienteDao = PostgreSQL_Factory.getClienteDAO();
-        InterfaceProductoDAO productoDao = PostgreSQL_Factory.getProductoDAO();
-        InterfaceFacturaDAO facturaDao = PostgreSQL_Factory.getFacturaDAO();
-        InterfaceFacturaProductoDAO facturaProductoDao = PostgreSQL_Factory.getFacturaProductoDAO();
+        InterfaceClienteDAO clienteDao = FactoryDB.getClienteDAO();
+        InterfaceProductoDAO productoDao = FactoryDB.getProductoDAO();
+        InterfaceFacturaDAO facturaDao = FactoryDB.getFacturaDAO();
+        InterfaceFacturaProductoDAO facturaProductoDao = FactoryDB.getFacturaProductoDAO();
 
         Producto p = productoDao.mayorRecaudacionPorProducto();
         System.out.println("---------------------------------------------------");
@@ -44,7 +43,6 @@ public class app {
             Cliente cl = i.next();
             System.out.println("\t" + cl.getTotalFacturado() +"\t\t\t " + cl );
         }
-
 
 
 
